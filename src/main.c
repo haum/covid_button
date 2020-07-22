@@ -51,7 +51,9 @@ int _write(int file, char *ptr, int len)
 static void gpio_setup(void)
 {
 	/* Setup GPIO pin GPIO5 on GPIO port A for LED. */
-	gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5);
+	gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5 | GPIO6);
+	gpio_set_output_options(GPIOA, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO5);
+	gpio_set_output_options(GPIOA, GPIO_OTYPE_OD, GPIO_OSPEED_50MHZ, GPIO6);
 
 	/* Setup GPIO pins for USART2 transmit. */
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2);
@@ -219,6 +221,16 @@ int main(void)
 
 		status = VL53L1X_ClearInterrupt(dev); /* clear interrupt has to be called to enable next interrupt*/
 		printf("%u, %u, %u, %u, %u\n", RangeStatus, Distance, SignalRate, AmbientRate, SpadNum);
+
+		const uint16_t th_min = 100, th_max = 1300;
+		bool touch = (RangeStatus == 0) && (Distance > th_min) && (Distance < th_max);
+		if (touch) {
+			gpio_set(GPIOA, GPIO5); // LED on
+			gpio_clear(GPIOA, GPIO6); // OD output GND
+		} else {
+			gpio_clear(GPIOA, GPIO5); // LED off
+			gpio_set(GPIOA, GPIO6); // OD output OPEN
+		}
 	}
 
 	return 0;
