@@ -177,49 +177,48 @@ int main(void)
 	printf("\nStart test\n");
 
 	uint16_t dev=0x29; // 7-bits addr
-	int status=0;
 	uint8_t sensorState=0;
 	while(sensorState==0){
-		status = VL53L1X_BootState(dev, &sensorState);
+		VL53L1X_BootState(dev, &sensorState);
 		delay_ms(2);
 	}
 	printf("Chip booted\n");
 
-	status = VL53L1X_SensorInit(dev);
-	status = VL53L1X_SetDistanceMode(dev, 1); /* 1=short, 2=long */
-	status = VL53L1X_SetTimingBudgetInMs(dev, 20); /* in ms possible values [20, 50, 100, 200, 500] */
-	status = VL53L1X_SetInterMeasurementInMs(dev, 20); /* in ms, IM must be > = TB */
-	//status = VL53L1X_SetOffset(dev, 20); /* offset compensation in mm */
-	//status = VL53L1X_SetROI(dev, 16, 16); /* minimum ROI 4,4 */
-	//status = VL53L1X_CalibrateOffset(dev, 140, &offset); /* may take few second to perform the offset cal*/
-	//status = VL53L1X_CalibrateXtalk(dev, 1000, &xtalk); /* may take few second to perform the xtalk cal */
+	VL53L1X_SensorInit(dev);
+	VL53L1X_SetDistanceMode(dev, 1); /* 1=short, 2=long */
+	VL53L1X_SetTimingBudgetInMs(dev, 20); /* in ms possible values [20, 50, 100, 200, 500] */
+	VL53L1X_SetInterMeasurementInMs(dev, 20); /* in ms, IM must be > = TB */
+	//VL53L1X_SetOffset(dev, 20); /* offset compensation in mm */
+	//VL53L1X_SetROI(dev, 16, 16); /* minimum ROI 4,4 */
+	//VL53L1X_CalibrateOffset(dev, 140, &offset); /* may take few second to perform the offset cal*/
+	//VL53L1X_CalibrateXtalk(dev, 1000, &xtalk); /* may take few second to perform the xtalk cal */
 	printf("VL53L1X Ultra Lite Driver Example running ...\n");
-	status = VL53L1X_StartRanging(dev);   /* This function has to be called to enable the ranging */
+	VL53L1X_StartRanging(dev);   /* This function has to be called to enable the ranging */
 	while(1){ /* read and display data */
 		uint8_t dataReady = 0;
 		uint8_t nbLoops = 0;
 		while (dataReady == 0 && nbLoops < 50){
-			status = VL53L1X_CheckForDataReady(dev, &dataReady);
+			VL53L1X_CheckForDataReady(dev, &dataReady);
 			delay_ms(2);
 			nbLoops++;
 		}
 
 		uint8_t RangeStatus;
-		status = VL53L1X_GetRangeStatus(dev, &RangeStatus);
+		VL53L1X_GetRangeStatus(dev, &RangeStatus);
 
 		uint16_t Distance;
-		status = VL53L1X_GetDistance(dev, &Distance);
+		VL53L1X_GetDistance(dev, &Distance);
 
 		uint16_t SignalRate;
-		status = VL53L1X_GetSignalRate(dev, &SignalRate);
+		VL53L1X_GetSignalRate(dev, &SignalRate);
 
 		uint16_t AmbientRate;
-		status = VL53L1X_GetAmbientRate(dev, &AmbientRate);
+		VL53L1X_GetAmbientRate(dev, &AmbientRate);
 
 		uint16_t SpadNum;
-		status = VL53L1X_GetSpadNb(dev, &SpadNum);
+		VL53L1X_GetSpadNb(dev, &SpadNum);
 
-		status = VL53L1X_ClearInterrupt(dev); /* clear interrupt has to be called to enable next interrupt*/
+		VL53L1X_ClearInterrupt(dev); /* clear interrupt has to be called to enable next interrupt*/
 		printf("%u, %u, %u, %u, %u\n", RangeStatus, Distance, SignalRate, AmbientRate, SpadNum);
 
 		const uint16_t th_min = 100, th_max = 1300;
