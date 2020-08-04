@@ -8,6 +8,8 @@
 #include <libopencm3/stm32/usart.h>
 #include <VL53L1X_api.h>
 
+int _write(int file, char *ptr, int len);
+
 static void clock_setup(void)
 {
 	/* Enable GPIOD clock for LED & USARTs. */
@@ -62,7 +64,7 @@ static void gpio_setup(void)
 	gpio_set_af(GPIOA, GPIO_AF7, GPIO2);
 }
 
-void i2c_setup(void)
+static void i2c_setup(void)
 {
 	rcc_periph_clock_enable(RCC_GPIOB);
 	gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO8 | GPIO9);
@@ -75,7 +77,7 @@ void i2c_setup(void)
 	i2c_peripheral_enable(I2C1);
 }
 
-void delay_setup(void)
+static void delay_setup(void)
 {
 	rcc_periph_clock_enable(RCC_TIM9);
 	timer_set_prescaler(TIM9, rcc_apb1_frequency / 1e3 - 1); // millisecond counter
@@ -83,7 +85,7 @@ void delay_setup(void)
 	timer_one_shot_mode(TIM9);
 }
 
-void delay_ms(uint16_t ms)
+static void delay_ms(uint16_t ms)
 {
 	timer_set_period(TIM9, ms);
 	timer_enable_counter(TIM9);
