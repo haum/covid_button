@@ -27,8 +27,6 @@ Compile
 
 This is a platformio projet. To compile and flash: `pio run -t upload`.
 
-You can install platformio with `pip install platformio`. Note that currently
-(2020-07) you have to update the content of
-~/.platformio/packages/framework-libopencm3
-with the content of the libopencm3 repository as the official platformio package
-distributes outdated code.
+You can install platformio with `pip install platformio`. Since 2020-08, the
+framework is included in platformio, thus there is no additional manipulation
+anymore.
